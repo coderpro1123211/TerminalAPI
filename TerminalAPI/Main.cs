@@ -10,11 +10,13 @@ namespace TerminalAPI
 {
     public class Terminal
     {
-
+        //TODO: Add API functions here
     }
 
     class PipeManager
     {
+        //TODO: Verify that it is working
+
         private static Process p;
         private static Process CurrentProcess
         {
@@ -79,6 +81,7 @@ namespace TerminalAPI
 
     static class StringE
     {
+        //TODO: Make this better
         public static Message ParseMessage(this string message)
         {
             Message m = Message.Default;
