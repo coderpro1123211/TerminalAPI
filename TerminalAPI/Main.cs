@@ -29,22 +29,54 @@ namespace TerminalAPI
                 return p;
             }
         }
-        static void SendMessage(Message message)
+        public static void SendMessage(Message message)
         {
             Console.WriteLine(message.ToString());
         }
 
-        static Message RecieveMessage()
+        public static Message RecieveMessage()
         {
             return Console.ReadLine().ParseMessage();
+        }
+
+        public static Response GetResponse()
+        {
+            Message response = Console.ReadLine().ParseMessage();
+            if (response.messageType == MessageType.Response)
+            {
+                return new Response(response.data);
+            }
+            else return new Response(null);
+        }
+    }
+
+    public struct Response
+    {
+        //TODO: Implement this
+
+        public bool hasData;
+        public string data;
+
+        public static Message Default
+        {
+            get
+            {
+                return new Message();
+            }
+        }
+
+        public Response(string data)
+        {
+            this.data = data;
+            hasData = data == null;
         }
     }
 
     public struct Message
     {
-        MessageType messageType;
-        bool hasData;
-        string data;
+        public MessageType messageType;
+        public bool hasData;
+        public string data;
 
         public static Message Default
         {
@@ -74,9 +106,22 @@ namespace TerminalAPI
         }
     }
 
+
+
     public enum MessageType
     {
-        Print = 0x01, PrintLn = 0x02, Read = 0x03, ReadLine = 0x04, SetColorBG = 0x05, SetColorFG = 0x06, None = 0xFF
+        Print = 0x01,
+        PrintLn = 0x02,
+        Read = 0x03,
+        ReadResponse = 0x13,
+        ReadLine = 0x04,
+        ReadLineResponse = 0x14,
+        SetColorBG = 0x05,
+        SetColorFG = 0x06,
+        Acknowledge = 0xAF,
+        Error = 0xFA,
+        None = 0xFF,
+        Response = ReadLineResponse | ReadResponse
     }
 
     static class StringE
@@ -85,10 +130,20 @@ namespace TerminalAPI
         public static Message ParseMessage(this string message)
         {
             Message m = Message.Default;
-            string[] msg = message.Split('§');
-            string data = (from Match match in Regex.Matches(message, "\"([^\"]*)\"") select match.ToString()).ElementAt(1);
+            string[] msg = message.Split('|');
+            //string data = (from Match match in Regex.Matches(message, "\"([^\"]*)\"") select match.ToString()).ElementAt(1);
+            string[] d = null;
+            try
+            {
+                msg.CopyTo(d, 1);
+            }
+            catch
+            {
+                //Message did not contain any data... Do nothing
+            }
+            string data = string.Join("|", d);
 
-            switch (int.Parse(message))
+            switch (int.Parse(msg[0]))
             {
                 default:
                     return m;
