@@ -13,25 +13,13 @@ namespace TerminalAPI
         //TODO: Add API functions here
     }
 
-    class PipeManager
+    public class PipeManager
     {
         //TODO: Verify that it is working
 
-        private static Process p;
-        private static Process CurrentProcess
+        public static void SendMessage(Message message, Process to)
         {
-            get
-            {
-                if (p == null)
-                {
-                    p = Process.GetCurrentProcess();
-                }
-                return p;
-            }
-        }
-        public static void SendMessage(Message message)
-        {
-            Console.WriteLine(message.ToString());
+            to.StandardInput.WriteLine(message.ToString());
         }
 
         public static Message RecieveMessage()
@@ -52,8 +40,6 @@ namespace TerminalAPI
 
     public struct Response
     {
-        //TODO: Implement this
-
         public bool hasData;
         public string data;
 
@@ -102,7 +88,7 @@ namespace TerminalAPI
 
         public override string ToString()
         {
-            return (int)messageType + "§" + data;
+            return (int)messageType + "|" + data;
         }
     }
 
@@ -126,20 +112,25 @@ namespace TerminalAPI
 
     static class StringE
     {
-        //TODO: Make this better
         public static Message ParseMessage(this string message)
         {
             Message m = Message.Default;
             string[] msg = message.Split('|');
-            //string data = (from Match match in Regex.Matches(message, "\"([^\"]*)\"") select match.ToString()).ElementAt(1);
-            string[] d = null;
+            string[] d = new string[msg.Length-1];
             try
             {
-                msg.CopyTo(d, 1);
+                for (int i = 0; i < msg.Length - 1; i++)
+                {
+                    if (i + 1 >= msg.Length)
+                    {
+                        break;
+                    }
+                    d[i] = msg[i + 1];
+                }
             }
-            catch
+            catch (Exception e)
             {
-                //Message did not contain any data... Do nothing
+                d[0] = e.ToString();
             }
             string data = string.Join("|", d);
 

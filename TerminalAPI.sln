@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalAPI", "TerminalAPI\TerminalAPI.csproj", "{40B91508-CAA1-49CF-ABAD-B09A32BD41AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalAPITester", "TerminalAPITester\TerminalAPITester.csproj", "{A3B391E8-0B30-4C77-B745-FF4FA0F14F82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{5FE838FE-A5C9-4D20-A193-4CE0C271CE06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{40B91508-CAA1-49CF-ABAD-B09A32BD41AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40B91508-CAA1-49CF-ABAD-B09A32BD41AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40B91508-CAA1-49CF-ABAD-B09A32BD41AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B391E8-0B30-4C77-B745-FF4FA0F14F82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B391E8-0B30-4C77-B745-FF4FA0F14F82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B391E8-0B30-4C77-B745-FF4FA0F14F82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B391E8-0B30-4C77-B745-FF4FA0F14F82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FE838FE-A5C9-4D20-A193-4CE0C271CE06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FE838FE-A5C9-4D20-A193-4CE0C271CE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FE838FE-A5C9-4D20-A193-4CE0C271CE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FE838FE-A5C9-4D20-A193-4CE0C271CE06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
