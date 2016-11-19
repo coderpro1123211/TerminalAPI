@@ -15,8 +15,6 @@ namespace TerminalAPI
 
     public class PipeManager
     {
-        //TODO: Verify that it is working
-
         public static void SendMessage(Message message, Process to)
         {
             to.StandardInput.WriteLine(message.ToString());
@@ -114,6 +112,8 @@ namespace TerminalAPI
     {
         public static Message ParseMessage(this string message)
         {
+            //TODO: Implement all the added commands here
+
             Message m = Message.Default;
             string[] msg = message.Split('|');
             string[] d = new string[msg.Length-1];
@@ -130,7 +130,7 @@ namespace TerminalAPI
             }
             catch (Exception e)
             {
-                d[0] = e.ToString();
+                //No message data... Don't do anything
             }
             string data = string.Join("|", d);
 
