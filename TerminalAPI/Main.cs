@@ -41,11 +41,11 @@ namespace TerminalAPI
         public bool hasData;
         public string data;
 
-        public static Message Default
+        public static Response Default
         {
             get
             {
-                return new Message();
+                return new Response();
             }
         }
 
@@ -62,11 +62,11 @@ namespace TerminalAPI
         public bool hasData;
         public string data;
 
-        public static Message Default
+        public static Message None
         {
             get
             {
-                return new Message();
+                return new Message(MessageType.None, null);
             }
         }
 
@@ -105,7 +105,8 @@ namespace TerminalAPI
         Acknowledge = 0xAF,
         Error = 0xFA,
         None = 0xFF,
-        Response = ReadLineResponse | ReadResponse
+        Response = ReadLineResponse | ReadResponse,
+        NoResponse = 0xAA
     }
 
     static class StringE
@@ -113,16 +114,15 @@ namespace TerminalAPI
         public static Message ParseMessage(this string message)
         {
             //TODO: Implement all the added commands here
-
-            Message m = Message.Default;
+            
             string[] msg = message.Split('|', 2, StringSplitOptions.RemoveEmptyEntries);
             
-            string data = msg[1];
+            string data = msg.Length > 1 ? msg[1] : "";
 
             switch (int.Parse(msg[0]))
             {
                 default:
-                    return m;
+                    return Message.None;
                 case 0x01:
                     return new Message(MessageType.Print, data);
                 case 0x02:
