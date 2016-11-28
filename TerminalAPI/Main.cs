@@ -113,7 +113,7 @@ namespace TerminalAPI
     {
         public static Message ParseMessage(this string message)
         {
-            //TODO: Implement all the added commands here
+            //TODO: Implement all the added message types here
             
             string[] msg = message.Split('|', 2, StringSplitOptions.RemoveEmptyEntries);
             
