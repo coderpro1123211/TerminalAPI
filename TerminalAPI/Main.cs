@@ -11,6 +11,11 @@ namespace TerminalAPI
     public class Terminal
     {
         //TODO: Add API functions here
+
+        public void WriteLine()
+        {
+            PipeManager.
+        }
     }
 
     public class PipeManager
@@ -74,7 +79,15 @@ namespace TerminalAPI
         {
             this.messageType = messageType;
             this.data = data;
-            hasData = data == null;
+            if (data == null)
+            {
+                hasData = false;
+            }
+            else if (string.IsNullOrWhiteSpace(data) || string.IsNullOrEmpty(data))
+            {
+                hasData = false;
+            }
+            else hasData = true;
         }
 
         public Message(MessageType messageType)
@@ -115,24 +128,9 @@ namespace TerminalAPI
             //TODO: Implement all the added commands here
 
             Message m = Message.Default;
-            string[] msg = message.Split('|');
-            string[] d = new string[msg.Length-1];
-            try
-            {
-                for (int i = 0; i < msg.Length - 1; i++)
-                {
-                    if (i + 1 >= msg.Length)
-                    {
-                        break;
-                    }
-                    d[i] = msg[i + 1];
-                }
-            }
-            catch (Exception e)
-            {
-                //No message data... Don't do anything
-            }
-            string data = string.Join("|", d);
+            string[] msg = message.Split('|', 2);
+
+            string data = msg.Length > 1 ? msg[1] : "";
 
             switch (int.Parse(msg[0]))
             {
