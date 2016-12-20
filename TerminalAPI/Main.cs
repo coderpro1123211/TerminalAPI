@@ -14,7 +14,7 @@ namespace TerminalAPI
 
         public void WriteLine()
         {
-            PipeManager.
+
         }
     }
 
@@ -46,11 +46,11 @@ namespace TerminalAPI
         public bool hasData;
         public string data;
 
-        public static Message Default
+        public static Response Default
         {
             get
             {
-                return new Message();
+                return new Response();
             }
         }
 
@@ -67,11 +67,11 @@ namespace TerminalAPI
         public bool hasData;
         public string data;
 
-        public static Message Default
+        public static Message None
         {
             get
             {
-                return new Message();
+                return new Message(MessageType.None, null);
             }
         }
 
@@ -118,7 +118,8 @@ namespace TerminalAPI
         Acknowledge = 0xAF,
         Error = 0xFA,
         None = 0xFF,
-        Response = ReadLineResponse | ReadResponse
+        Response = ReadLineResponse | ReadResponse,
+        NoResponse = 0xAA
     }
 
     static class StringE
@@ -128,14 +129,29 @@ namespace TerminalAPI
             //TODO: Implement all the added commands here
 
             Message m = Message.Default;
-            string[] msg = message.Split('|', 2);
-
-            string data = msg.Length > 1 ? msg[1] : "";
+            string[] msg = message.Split('|');
+            string[] d = new string[msg.Length-1];
+            try
+            {
+                for (int i = 0; i < msg.Length - 1; i++)
+                {
+                    if (i + 1 >= msg.Length)
+                    {
+                        break;
+                    }
+                    d[i] = msg[i + 1];
+                }
+            }
+            catch (Exception e)
+            {
+                //No message data... Don't do anything
+            }
+            string data = string.Join("|", d);
 
             switch (int.Parse(msg[0]))
             {
                 default:
-                    return m;
+                    return Message.None;
                 case 0x01:
                     return new Message(MessageType.Print, data);
                 case 0x02:
