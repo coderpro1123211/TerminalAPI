@@ -8,13 +8,39 @@ using System.Threading.Tasks;
 
 namespace TerminalAPI
 {
-    public class Terminal
+    public abstract class Terminal
     {
         //TODO: Add API functions here
 
-        public void WriteLine()
+        public static void WriteLine(string str)
         {
+            PipeManager.SendMessage(new Message(MessageType.PrintLn, str));
+        }
 
+        public static void WriteLine(string format, params object[] args)
+        {
+            PipeManager.SendMessage(new Message(MessageType.PrintLn, string.Format(format, args)));
+        }
+
+        public static ConsoleKey Read()
+        {
+            PipeManager.SendMessage(new Message(MessageType.Read, "0"));
+            Message m = PipeManager.RecieveMessage();
+            //System.Windows.Forms.MessageBox.Show(m.data);
+            return (ConsoleKey)Enum.Parse(typeof(ConsoleKey), m.data);
+        }
+
+        public static ConsoleKey Read(bool showKey)
+        {
+            PipeManager.SendMessage(new Message(MessageType.Read, !showKey ? "1" : "0"));
+            Message m = PipeManager.RecieveMessage();
+            //System.Windows.Forms.MessageBox.Show(m.data);
+            return (ConsoleKey)Enum.Parse(typeof(ConsoleKey), m.data);
+        }
+
+        public static void Clear()
+        {
+            PipeManager.SendMessage(new Message(MessageType.Clear));
         }
     }
 
@@ -25,9 +51,19 @@ namespace TerminalAPI
             to.StandardInput.WriteLine(message.ToString());
         }
 
+        public static void SendMessage(Message message)
+        {
+            Console.WriteLine(message.ToString());
+        }
+
         public static Message RecieveMessage()
         {
             return Console.ReadLine().ParseMessage();
+        }
+
+        public static Message RecieveMessage(Process from)
+        {
+            return from.StandardOutput.ReadLine().ParseMessage();
         }
 
         public static Response GetResponse()
@@ -46,7 +82,7 @@ namespace TerminalAPI
         public bool hasData;
         public string data;
 
-        public static Response Default
+        public static Response None
         {
             get
             {
@@ -57,7 +93,11 @@ namespace TerminalAPI
         public Response(string data)
         {
             this.data = data;
-            hasData = data == null;
+            if (string.IsNullOrWhiteSpace(data) || string.IsNullOrEmpty(data))
+            {
+                hasData = false;
+            }
+            else hasData = true;
         }
     }
 
@@ -79,11 +119,7 @@ namespace TerminalAPI
         {
             this.messageType = messageType;
             this.data = data;
-            if (data == null)
-            {
-                hasData = false;
-            }
-            else if (string.IsNullOrWhiteSpace(data) || string.IsNullOrEmpty(data))
+            if (string.IsNullOrWhiteSpace(data) || string.IsNullOrEmpty(data))
             {
                 hasData = false;
             }
@@ -99,7 +135,7 @@ namespace TerminalAPI
 
         public override string ToString()
         {
-            return (int)messageType + "|" + data;
+            return (int)messageType + (hasData || data != null ? ("|" + data) : "");
         }
     }
 
@@ -115,6 +151,7 @@ namespace TerminalAPI
         ReadLineResponse = 0x14,
         SetColorBG = 0x05,
         SetColorFG = 0x06,
+        Clear = 0x07,
         Acknowledge = 0xAF,
         Error = 0xFA,
         None = 0xFF,
@@ -128,43 +165,11 @@ namespace TerminalAPI
         {
             //TODO: Implement all the added commands here
 
-            Message m = Message.Default;
-            string[] msg = message.Split('|');
-            string[] d = new string[msg.Length-1];
-            try
-            {
-                for (int i = 0; i < msg.Length - 1; i++)
-                {
-                    if (i + 1 >= msg.Length)
-                    {
-                        break;
-                    }
-                    d[i] = msg[i + 1];
-                }
-            }
-            catch (Exception e)
-            {
-                //No message data... Don't do anything
-            }
-            string data = string.Join("|", d);
+            string[] msg = message.Split(new char[] { '|' }, 2);
 
-            switch (int.Parse(msg[0]))
-            {
-                default:
-                    return Message.None;
-                case 0x01:
-                    return new Message(MessageType.Print, data);
-                case 0x02:
-                    return new Message(MessageType.PrintLn, data);
-                case 0x03:
-                    return new Message(MessageType.Read);
-                case 0x04:
-                    return new Message(MessageType.ReadLine);
-                case 0x05:
-                    return new Message(MessageType.SetColorBG, data);
-                case 0x06:
-                    return new Message(MessageType.SetColorFG, data);
-            }
+            string data = msg.LastOrDefault();
+
+            return new Message((MessageType)int.Parse(msg[0]), data);
         }
     }
 }
